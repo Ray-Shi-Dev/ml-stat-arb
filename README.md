@@ -59,6 +59,7 @@ graph TD
     I -->|Spread > +2 Std Dev| J[Short Signal / Entry]
     I -->|Spread < -2 Std Dev| K[Long Signal / Entry]
     I -->|Spread > +/- 3 Std Dev| L[Stop-Loss Trigger]
+```
 
 🚀 Quick Start & Testing
 
