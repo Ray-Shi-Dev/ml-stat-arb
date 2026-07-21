@@ -1,2 +1,14 @@
 venv/
 __pycache__/
+
+# Ignore data and models, but track the folders
+data/*
+!data/.gitkeep
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+models/*
+!models/.gitkeep
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints/

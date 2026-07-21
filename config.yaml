@@ -1,0 +1,12 @@
+# config.yaml
+data:
+  raw_path: "data/raw/dataset.csv"
+  processed_path: "data/processed/cleaned_data.csv"
+
+model:
+  ensemble_method: "random_forest"
+  n_estimators: 100
+  random_state: 42
+
+clustering:
+  n_clusters: 5
