@@ -1,4 +1,44 @@
-Quant PropTech Arbitrage: A Machine Learning Approach to Pairs TradingWelcome to my side project! The idea for this repository actually sparked while I was reproducing Prof. Chun Fu’s Kaggle competition workflows—specifically the ASHRAE Great Energy Predictor III and the LEAD (Large-scale Energy Anomaly Detection) challenges.While working through those pipelines, I saw firsthand how incredibly effective Gradient Boosting Machines (GBMs) and rigorous time-series feature engineering are for building energy prediction and anomaly detection. It got me thinking: Could these exact same structural and time-series machine learning pipelines be ported over to financial time-series? After doing some digging, I decided to test this hypothesis by applying these methods to identify statistical arbitrage opportunities in the PropTech and Real Estate Investment Trust (REIT) sector (specifically looking at assets like Prologis PLD vs. American Tower AMT).📌 The Research QuestionCan machine learning pipelines optimized for physical building energy time-series (leveraging tree-based models and advanced feature extraction) be successfully adapted to predict cointegration breakdowns and generate profitable statistical arbitrage signals between PropTech assets?Essentially, pairs trading is just a specific type of anomaly detection. We are looking for moments when the historical spread between two correlated assets breaks down (an anomaly) so we can bet on the mean reversion.🛠️ Methodology & Why I Chose ItInstead of jumping straight to computationally heavy deep learning models, I stuck to the philosophy learned from the Kaggle workflows: careful pre-processing and tree-based models often work best for structured time-series data.Here is the breakdown of the methods used and the rationale behind them:1. Ensemble Gradient Boosted Decision Trees (LightGBM & XGBoost)I chose GBDTs over neural networks because they handle tabular time-series data exceptionally well, require less tuning to get a baseline, and process data on the CPU efficiently. In the context of predicting the spread between two assets, tree-based models are highly robust against non-linear relationships.Reference: Miller, C., Hao, L., & Fu, C. (2022). Gradient boosting machines and careful pre-processing work best: ASHRAE Great Energy Predictor III lessons learned. ASHRAE Transactions. (This paper highlights why LightGBM/XGBoost are the top choices for structured time-series prediction).2. Time-Lag & Rolling Window Feature EngineeringModels are only as good as the features you feed them. To capture market momentum and mean-reverting behaviors, I engineered high-frequency multi-index time-lag features (e.g., $t-24h$, $t-168h$, ratios, and differences) alongside rolling window statistics.Reference: Fu, C., Arjunan, P., & Miller, C. (2022). Trimming outliers using trees: Winning solution of the Large-scale Energy Anomaly Detection (LEAD) competition. (Demonstrates the necessity of sliding windows and lag features when detecting anomalies in sequential data).3. Digital Signal Processing (Savitzky-Golay Filter)Financial data is incredibly noisy. Traditional moving averages tend to introduce severe lag and artificially flatten out the structural peaks of the data. I implemented a Savitzky-Golay filter to smooth out the high-frequency microstructural noise while perfectly preserving the depth and height of the structural peaks in the cointegration spread. This allows the model to trigger entry and stop-loss thresholds much more accurately.📊 System ArchitectureHere is a high-level look at the data pipeline and signal generation workflow: graph TD
+# Quant PropTech Arbitrage: A Machine Learning Approach to Pairs Trading
+
+Welcome to my side project! The idea for this repository actually sparked while I was reproducing Prof. Chun Fu’s Kaggle competition workflows—specifically the ASHRAE Great Energy Predictor III and the LEAD (Large-scale Energy Anomaly Detection) challenges. 
+
+While working through those pipelines, I saw firsthand how incredibly effective Gradient Boosting Machines (GBMs) and rigorous time-series feature engineering are for building energy prediction and anomaly detection. It got me thinking: *Could these exact same structural and time-series machine learning pipelines be ported over to financial time-series?* After doing some research and tinkering, I decided to test this hypothesis by applying these methods to identify statistical arbitrage opportunities in the PropTech and Real Estate Investment Trust (REIT) sector (specifically looking at assets like Prologis `PLD` vs. American Tower `AMT`). 
+
+---
+
+## 📌 The Research Question
+
+**Can machine learning pipelines optimized for physical building energy time-series (leveraging tree-based models and advanced feature extraction) be successfully adapted to predict cointegration breakdowns and generate profitable statistical arbitrage signals between PropTech assets?**
+
+Essentially, pairs trading is just a specific type of anomaly detection. We are looking for moments when the historical spread between two correlated assets breaks down (an anomaly) so we can bet on the mean reversion.
+
+---
+
+## 🛠️ Methodology & Why I Chose It
+
+Instead of jumping straight to computationally heavy deep learning models, I stuck to the practical philosophy learned from the Kaggle workflows: careful pre-processing and tree-based models often work best for structured time-series data.
+
+Here is the breakdown of the methods used and the rationale behind them:
+
+### 1. Ensemble Gradient Boosted Decision Trees (LightGBM & XGBoost)
+I chose GBDTs over neural networks because they handle tabular time-series data exceptionally well, require less tuning to get a solid baseline, and process data on the CPU efficiently. In the context of predicting the spread between two assets, tree-based models are highly robust against non-linear relationships.
+> **Citation:** Miller, C., Hao, L., & Fu, C. (2022). *Gradient boosting machines and careful pre-processing work best: ASHRAE Great Energy Predictor III lessons learned.* ASHRAE Transactions. (Highlights why LightGBM/XGBoost are top choices for structured time-series prediction).
+
+### 2. Time-Lag & Rolling Window Feature Engineering
+Models are only as good as the features you feed them. To capture market momentum and mean-reverting behaviors, I engineered high-frequency multi-index time-lag features (e.g., t-24h, t-168h, ratios, and differences) alongside rolling window statistics. 
+> **Citation:** Fu, C., Arjunan, P., & Miller, C. (2022). *Trimming outliers using trees: Winning solution of the Large-scale Energy Anomaly Detection (LEAD) competition.* (Demonstrates the necessity of sliding windows and lag features when detecting anomalies in sequential data).
+
+### 3. Digital Signal Processing (Savitzky-Golay Filter)
+Financial data is incredibly noisy. Traditional moving averages tend to introduce severe lag and artificially flatten out the structural peaks of the data. I implemented a Savitzky-Golay filter to smooth out the high-frequency microstructural noise while perfectly preserving the depth and height of the structural peaks in the cointegration spread. This allows the model to trigger entry and stop-loss thresholds much more accurately.
+
+---
+
+## 📊 System Architecture
+
+Here is a high-level look at the data pipeline and signal generation workflow:
+
+```mermaid
+graph TD
     A[Raw PropTech Asset Data<br/>e.g., PLD & AMT] --> B[Data Preprocessing & Cleaning]
     
     subgraph Feature Engineering
@@ -18,7 +58,20 @@ Quant PropTech Arbitrage: A Machine Learning Approach to Pairs TradingWelcome to
     H --> I{Trading Logic Engine}
     I -->|Spread > +2 Std Dev| J[Short Signal / Entry]
     I -->|Spread < -2 Std Dev| K[Long Signal / Entry]
-    I -->|Spread > +/- 3 Std Dev| L[Stop-Loss Trigger] 🚀 Quick Start / Testing
-(Standard repo installation instructions would go here—e.g., pip install -r requirements.txt, setting up the Jupyter notebooks, and running the model_training.py script).
+    I -->|Spread > +/- 3 Std Dev| L[Stop-Loss Trigger]
 
-Feel free to poke around the notebooks! The main logic is in the notebooks/ folder where I walk through the data ingestion, the Savitzky-Golay smoothing visualization, and the final LightGBM model training. If you have ideas on how to improve the feature engineering or want to test this on different asset pairs, PRs are always welcome.
+🚀 Quick Start & Testing
+
+Clone the repo and install dependencies:
+
+Bash
+pip install -r requirements.txt
+Run the data ingestion and preprocessing script:
+
+Bash
+python src/data_pipeline.py
+Train the models and generate the spread visualizations:
+
+Bash
+python src/model_training.py
+Feel free to poke around the notebooks in the notebooks/ folder! I walk through the data ingestion, the Savitzky-Golay smoothing visualization, and the final LightGBM model training step-by-step. If you have ideas on how to improve the feature engineering or want to test this on different asset pairs, PRs are always welcome.
