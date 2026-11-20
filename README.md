@@ -1,5 +1,7 @@
 # Quant PropTech Arbitrage: A Machine Learning Approach to Pairs Trading
 
+> Project write-up with the method and results: **[ray-shi-dev.github.io/work/ml-stat-arb](https://ray-shi-dev.github.io/work/ml-stat-arb/)**
+
 Welcome to my side project! The idea for this repository actually sparked while I was reproducing Prof. Chun Fu’s Kaggle competition workflows—specifically the ASHRAE Great Energy Predictor III and the LEAD (Large-scale Energy Anomaly Detection) challenges. 
 
 While working through those pipelines, I saw firsthand how incredibly effective Gradient Boosting Machines (GBMs) and rigorous time-series feature engineering are for building energy prediction and anomaly detection. It got me thinking: *Could these exact same structural and time-series machine learning pipelines be ported over to financial time-series?* After doing some research and tinkering, I decided to test this hypothesis by applying these methods to identify statistical arbitrage opportunities in the PropTech and Real Estate Investment Trust (REIT) sector (specifically looking at assets like Prologis `PLD` vs. American Tower `AMT`). 
